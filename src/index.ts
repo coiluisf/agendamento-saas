@@ -7,6 +7,9 @@ import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+import servicesRoutes from './routes/services.routes';
+import availabilityRoutes from './routes/availability.routes';
+import appointmentsRoutes from './routes/appointments.routes';
 
 dotenv.config();
 
@@ -31,6 +34,9 @@ app.use(requestLogger);
 // Rotas
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/users`, userRoutes);
+app.use(`${API_PREFIX}/services`, servicesRoutes);
+app.use(`${API_PREFIX}/availability`, availabilityRoutes);
+app.use(`${API_PREFIX}/appointments`, appointmentsRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {

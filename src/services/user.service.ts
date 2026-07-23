@@ -12,9 +12,10 @@ export class UserService {
         id: true,
         email: true,
         name: true,
-        avatar: true,
-        role: true,
-        active: true,
+        phone: true,
+        businessName: true,
+        businessType: true,
+        businessPhoto: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -27,8 +28,8 @@ export class UserService {
     return user;
   }
 
-  async updateUser(id: string, data: { name?: string; avatar?: string }) {
-    if (!data.name && !data.avatar) {
+  async updateUser(id: string, data: { name?: string; phone?: string; businessName?: string }) {
+    if (!data.name && !data.phone && !data.businessName) {
       throw new ValidationError('At least one field is required');
     }
 
@@ -36,15 +37,17 @@ export class UserService {
       where: { id },
       data: {
         ...(data.name && { name: data.name }),
-        ...(data.avatar && { avatar: data.avatar }),
+        ...(data.phone && { phone: data.phone }),
+        ...(data.businessName && { businessName: data.businessName }),
       },
       select: {
         id: true,
         email: true,
         name: true,
-        avatar: true,
-        role: true,
-        active: true,
+        phone: true,
+        businessName: true,
+        businessType: true,
+        businessPhoto: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -66,7 +69,7 @@ export class UserService {
       throw new NotFoundError('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
 
     if (!isPasswordValid) {
       throw new ValidationError('Current password is incorrect');
@@ -77,7 +80,7 @@ export class UserService {
     await prisma.user.update({
       where: { id },
       data: {
-        password: hashedPassword,
+        passwordHash: hashedPassword,
       },
     });
 

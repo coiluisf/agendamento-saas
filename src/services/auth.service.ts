@@ -29,12 +29,12 @@ export class AuthService {
       data: {
         email,
         name,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
       },
     });
 
     // Gerar token
-    const token = this.generateToken(user.id, user.email, user.role);
+    const token = this.generateToken(user.id, user.email, 'user');
 
     return {
       user: {
@@ -62,18 +62,14 @@ export class AuthService {
     }
 
     // Verificar senha
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
       throw new AuthenticationError('Invalid email or password');
     }
 
-    if (!user.active) {
-      throw new AuthenticationError('User account is inactive');
-    }
-
     // Gerar token
-    const token = this.generateToken(user.id, user.email, user.role);
+    const token = this.generateToken(user.id, user.email, 'user');
 
     return {
       user: {
@@ -90,11 +86,11 @@ export class AuthService {
       where: { id: userId },
     });
 
-    if (!user || !user.active) {
-      throw new AuthenticationError('User not found or inactive');
+    if (!user) {
+      throw new AuthenticationError('User not found');
     }
 
-    const token = this.generateToken(user.id, user.email, user.role);
+    const token = this.generateToken(user.id, user.email, 'user');
 
     return {
       token,

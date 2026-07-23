@@ -21,8 +21,8 @@ export class UserController {
         res.status(401).json({ error: 'Unauthorized' });
         return;
       }
-      const { name, avatar } = req.body;
-      const user = await userService.updateUser(req.user.id, { name, avatar });
+      const { name, phone, businessName } = req.body;
+      const user = await userService.updateUser(req.user.id, { name, phone, businessName });
       res.status(200).json(user);
     } catch (error) {
       next(error);
