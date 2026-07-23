@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { ValidationError, AuthenticationError } from '../middleware/errorHandler';
 
@@ -102,7 +102,7 @@ export class AuthService {
   }
 
   private generateToken(userId: string, email: string, role: string): string {
-    const secret = process.env.JWT_SECRET || '';
+    const secret = process.env.JWT_SECRET || 'default_secret_change_in_production';
     const expiresIn = process.env.JWT_EXPIRE || '24h';
 
     return jwt.sign(
@@ -112,7 +112,7 @@ export class AuthService {
         role,
       },
       secret,
-      { expiresIn }
+      { expiresIn } as SignOptions
     );
   }
 }

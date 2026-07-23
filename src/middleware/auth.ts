@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: Request, _res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -36,7 +36,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 };
 
 export const authorize = (allowedRoles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new AuthenticationError('User not authenticated');
     }
