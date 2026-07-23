@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String
+  password  String
+  role      String     @default("user")
+  avatar    String?
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  calendars Calendar[]
+  appointments Appointment[]
+  reviews   Review[]
+
+  @@map("users")
+}
+
+model Calendar {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  description String?
+  color     String     @default("#6366f1")
+  timezone  String     @default("UTC")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  appointments Appointment[]
+  availabilities Availability[]
+
+  @@unique([userId, name])
+  @@map("calendars")
+}
+
+model Appointment {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calendarId String
+  calendar  Calendar   @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  title     String
+  description String?
+  startTime DateTime
+  endTime   DateTime
+  status    String     @default("pending") // pending, confirmed, cancelled
+  clientName String?
+  clientEmail String?
+  notes     String?
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  reviews   Review[]
+
+  @@map("appointments")
+}
+
+model Availability {
+  id        String     @id @default(cuid())
+  calendarId String
+  calendar  Calendar   @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  dayOfWeek Int        // 0-6, where 0 is Sunday
+  startTime String     // Format: HH:mm
+  endTime   String     // Format: HH:mm
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([calendarId, dayOfWeek])
+  @@map("availabilities")
+}
+
+model Review {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointmentId String?
+  appointment Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  rating    Int        // 1-5
+  comment   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("reviews")
+}
